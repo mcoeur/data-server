@@ -1,0 +1,17 @@
+{
+  "name": "data-server",
+  "version": "0.0.1",
+  "description": "very yes soft",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.12.3",
+    "busboy": "^0.2.9",
+    "aws-sdk": "^2.1.23",
+    "q": "^1.2.0",
+    "morgan": "^1.5.2",
+    "body-parser": "^1.12.2",
+    "connect-busboy": "0.0.2",
+    "cors": "^2.5.3"
+  },
+  "devDependencies": {}
+}
