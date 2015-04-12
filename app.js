@@ -7,16 +7,22 @@
 	extend(exports, api);
 
 	var app         = require('express')(),
-	    morgan      = require("morgan"),
-	    cors        = require('cors'),
-	    busboy      = require('connect-busboy'),
-	    Q           = require('q'),
-	    defaultConf = {
-		    port:         8080,
-		    provider:     "filesystem",
-		    providerConf: {}
-	    },
-	    provider;
+		morgan      = require("morgan"),
+		cors        = require('cors'),
+		busboy      = require('connect-busboy'),
+		Q           = require('q'),
+		defaultConf = {
+			port: 8080,
+			provider: {
+				type: "filesystem",
+				conf: {}
+			},
+			naming: function(name) {
+				var ext = '.' + name.split('.').pop();
+				return new Date().getTime().toString(36) + ext;
+			}
+		},
+		provider;
 
 	function extend(obj) {
 		var args = [].slice.call(arguments, 1);
@@ -31,8 +37,7 @@
 
 	function _run(userConf) {
 		var conf = merge(defaultConf, userConf);
-
-		provider = getProvider(conf.provider);
+		provider = getProvider(conf.provider.type);
 		app.use([
 			morgan("dev"),
 			busboy(),
@@ -71,8 +76,8 @@
 		try {
 			req.pipe(req.busboy);
 			req.busboy.on('file', function (fieldname, stream, filename) {
-				console.log('to put : ', filename);
-				provider.put(stream, filename).then(deferred.resolve, deferred.reject);
+				console.log('to put : ', defaultConf.naming(filename));
+				provider.put(stream, defaultConf.naming(filename)).then(deferred.resolve, deferred.reject);
 			});
 		}
 		catch (e) {
@@ -82,7 +87,7 @@
 	}
 
 	function upload_raw(req, res) {
-		return provider.put(req);
+		return provider.put(req, defaultConf.naming());
 	}
 
 	function merge(source, mix) {
@@ -102,7 +107,7 @@
 				typeof provider.put !== 'function' ||
 				typeof provider.setConf !== 'function')
 				throw new Error('Provider: ' + providerName + ' malconstruct');
-			provider.setConf(defaultConf.providerConf);
+			provider.setConf(defaultConf.provider.conf);
 		} catch (e) {
 			provider = {
 				get: function () {

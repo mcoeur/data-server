@@ -1,19 +1,19 @@
 (function (exports) {
 	"use strict";
 	var Q    = require('q'),
-	    fs   = require('fs'),
-	    path = require('path');
+		fs   = require('fs'),
+		path = require('path');
 	var defaultPath = path.resolve(__dirname, '../tmp/');
 	if (!fs.existsSync(defaultPath))
 		fs.mkdirSync(defaultPath);
 	var api         = {
-		    get:     _get,
-		    put:     _put,
-		    setConf: _setConf
-	    },
-	    defaultConf = {
-		    path: defaultPath
-	    };
+			get:     _get,
+			put:     _put,
+			setConf: _setConf
+		},
+		defaultConf = {
+			path: defaultPath
+		};
 	extend(exports, api);
 
 	function extend(obj) {
