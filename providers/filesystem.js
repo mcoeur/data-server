@@ -44,17 +44,15 @@
 		if (!fileName)
 			fileName = "noname.jpg" // do cool stuff here
 
-		console.log("very put");
 		var filePath = path.resolve(defaultConf.path, fileName)
 		return Q.Promise(function (resolve, reject) {
 			try {
-				console.log('path :', filePath, fileName);
 				var file = fs.createWriteStream(filePath);
 				stream.pipe(file);
 				stream.on('error', reject);
 				file.on('error', reject)
 					.on("finish", function () {
-						resolve("file uploaded");
+						resolve({name:fileName});
 					});
 			} catch (e) {
 				console.log(e);

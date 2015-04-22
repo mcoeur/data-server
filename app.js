@@ -11,6 +11,7 @@
 		cors        = require('cors'),
 		busboy      = require('connect-busboy'),
 		Q           = require('q'),
+		url			= require('url'),
 		defaultConf = {
 			port: 8080,
 			provider: {
@@ -51,10 +52,17 @@
 			else
 				seq = upload_raw(req);
 			seq.then(function (data) {
-				res.status(200).send('very put');
+				data.url = url.format( {
+					protocol : req.protocol,
+					hostname : req.hostname,
+					pathname : data.name,
+					port : conf.port != 80 ? conf.port : null
+				});
+				/* TODO : cache + headers(etag...) */
+				res.status(200).send(data);
 			}, function (err) {
 				console.log("err : ", err);
-				res.status(404).send('not found =(');
+				res.status(500).send('upload failed');
 			});
 		});
 
@@ -76,7 +84,6 @@
 		try {
 			req.pipe(req.busboy);
 			req.busboy.on('file', function (fieldname, stream, filename) {
-				console.log('to put : ', defaultConf.naming(filename));
 				provider.put(stream, defaultConf.naming(filename)).then(deferred.resolve, deferred.reject);
 			});
 		}
