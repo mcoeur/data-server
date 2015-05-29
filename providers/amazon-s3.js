@@ -87,8 +87,7 @@
 		defaultConf = userConf;
 		AWS.config.update({
 			accessKeyId: defaultConf.accessKeyId,
-			secretAccessKey: defaultConf.secretAccessKey,
-			signatureVersion: 'v4'
+			secretAccessKey: defaultConf.secretAccessKey
 		});
 		s3 = new AWS.S3();
 	}
